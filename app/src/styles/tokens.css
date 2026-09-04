@@ -1,0 +1,77 @@
+:root {
+  /* surfaces — cold, desaturated, steel */
+  --void: #0b0e12;
+  --panel: #141920;
+  --panel-hi: #1b2129; /* Part I §2.2 ships this corrupted as #1B2husband129 */
+  --line: #232b36;
+  --line-hi: #34404f;
+
+  /* type */
+  --text: #c9d3dd;
+  --text-dim: #8493a2;
+  --text-mute: #566472;
+
+  /* ORE RAMP — sequential, 0 -> 1. Pyrolusite steel through gondite ochre to
+     braunite ember. The only ramp for prospectivity. Never rainbow, never viridis. */
+  --ore-00: #16202e;
+  --ore-20: #1e4a5f;
+  --ore-40: #2e7d8c;
+  --ore-60: #c9a227;
+  --ore-80: #e2622a;
+  --ore-100: #f7e0a8;
+
+  /* rhodonite — a real Sausar Group vein mineral. Selection only. The one pink. */
+  --rhodonite: #d96a8e;
+
+  /* semantic — operations side only */
+  --risk-low: #3e8e6b;
+  --risk-mid: #c9a227;
+  --risk-high: #c4482e;
+
+  /* Part III §3 — CHROME IS GLASS. Floating panels only, max 6 on screen. */
+  --radius-panel: 12px;
+  --panel-glass: rgba(20, 25, 32, 0.72);
+  --panel-border: 1px solid rgba(201, 211, 221, 0.1);
+  --panel-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+
+  /* Part III §3 — DATA IS PAPER. Tables, readouts, chart interiors. */
+  --radius-data: 0px;
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+/* A solid tint floor beneath the blur — Part III §7 "contrast collapse".
+   Blur alone over a bright globe limb drops text toward 2:1. */
+.glass {
+  background: var(--panel-glass);
+  backdrop-filter: blur(18px) saturate(1.1);
+  -webkit-backdrop-filter: blur(18px) saturate(1.1);
+  border: var(--panel-border);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--panel-shadow);
+}
+
+/* Data surfaces sit inside glass but never inherit its softness. */
+.data {
+  border-radius: var(--radius-data);
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+/* Part III §3 — glow is reserved for ACT severity. Full stop. */
+.glow-act {
+  background:
+    linear-gradient(180deg, transparent 55%, rgba(226, 98, 42, 0.22) 100%),
+    var(--panel-glass);
+}
+
+.glow-watch {
+  background:
+    linear-gradient(180deg, transparent 55%, rgba(201, 162, 39, 0.11) 100%),
+    var(--panel-glass);
+}
