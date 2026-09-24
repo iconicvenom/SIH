@@ -1,7 +1,6 @@
 import { useDrishti } from '../store/useDrishti';
 import { ScenePreview } from './ScenePreview';
 import { SimulateCluster } from './SimulateCluster';
-import { LayersCluster } from './LayersCluster';
 import { DriverWaterfall } from './widgets/DriverWaterfall';
 
 export function LeftRail() {
@@ -26,7 +25,6 @@ export function LeftRail() {
       <div style={{ pointerEvents: 'auto' }}>
         <ScenePreview />
         <SimulateCluster />
-        <LayersCluster />
       </div>
 
       {/* EXPLORATION has nothing here by design — Target Inspector and Depth Profile are a
