@@ -84,14 +84,19 @@ export function SceneToolbar() {
         </div>
       )}
 
-      <div className="glass mono flex items-center gap-4 px-4 py-3" style={{ pointerEvents: 'auto' }}>
-        <div className="flex items-center gap-1">
+      <div
+        className="glass mono flex flex-wrap items-center justify-center"
+        style={{ pointerEvents: 'auto', width: 'max-content', maxWidth: 'calc(100vw - 32px)', padding: '12px 16px', gap: '12px 16px' }}
+      >
+        <div className="flex items-center" style={{ gap: 8, flexShrink: 0 }}>
           {STATES.map((s) => (
             <button
               key={s.view}
               onClick={() => setView(s.view)}
-              className="mono px-3 py-1"
+              className="mono"
               style={{
+                padding: '6px 12px',
+                whiteSpace: 'nowrap',
                 fontSize: 11,
                 letterSpacing: '0.06em',
                 color: view === s.view ? 'var(--text)' : 'var(--text-dim)',
@@ -104,13 +109,13 @@ export function SceneToolbar() {
         </div>
 
         {view === 'RELIEF' && (
-          <div className="flex" style={{ borderLeft: '1px solid var(--line)', paddingLeft: 10 }}>
+          <div className="flex items-center" style={{ gap: 8, flexShrink: 0, borderLeft: '1px solid var(--line)', paddingLeft: 16 }}>
             {(['PROSPECTIVITY', 'CONFIDENCE'] as const).map((d) => (
               <button
                 key={d}
                 onClick={() => setDrape(d)}
-                className="mono px-3 py-1"
-                style={{ fontSize: 10, color: drape === d ? 'var(--text)' : 'var(--text-dim)' }}
+                className="mono"
+                style={{ padding: '6px 12px', whiteSpace: 'nowrap', fontSize: 10, color: drape === d ? 'var(--text)' : 'var(--text-dim)' }}
               >
                 {d}
               </button>
@@ -121,12 +126,14 @@ export function SceneToolbar() {
         {view === 'FLAT' && (
           <button
             onClick={toggleKnownDeposits}
-            className="mono px-3 py-1"
+            className="mono"
             style={{
+              padding: '6px 12px 6px 16px',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
               fontSize: 10,
               letterSpacing: '0.06em',
               borderLeft: '1px solid var(--line)',
-              paddingLeft: 10,
               color: showKnownDeposits ? 'var(--rhodonite)' : 'var(--text-dim)',
             }}
           >
@@ -134,13 +141,13 @@ export function SceneToolbar() {
           </button>
         )}
 
-        <div className="flex items-center gap-2" style={{ borderLeft: '1px solid var(--line)', paddingLeft: 10 }}>
+        <div className="flex items-center" style={{ gap: 12, flexShrink: 0, whiteSpace: 'nowrap', borderLeft: '1px solid var(--line)', paddingLeft: 16 }}>
           <div style={{ width: 60, height: 6, background: ORE_RAMP_CSS, borderRadius: 2 }} />
           <span style={{ fontSize: 10, color: 'var(--text-mute)' }}>V.E. {view === 'FLAT' ? '0.0' : '2.4'}×</span>
         </div>
 
         {hoverCell && (
-          <div style={{ fontSize: 10, color: 'var(--text-dim)', borderLeft: '1px solid var(--line)', paddingLeft: 10 }}>
+          <div style={{ fontSize: 10, whiteSpace: 'nowrap', color: 'var(--text-dim)', borderLeft: '1px solid var(--line)', paddingLeft: 16 }}>
             {formatCoord(hoverCell.lon)}E {formatCoord(hoverCell.lat)}N
             {hoverElevation !== null && ` · ${formatElevation(hoverElevation)}`}
             {hoverProb !== null && ` · p${formatProbability(hoverProb)}`}
@@ -153,8 +160,8 @@ export function SceneToolbar() {
             selectCell(null);
             resetCameraOffset.current();
           }}
-          className="mono px-3 py-1"
-          style={{ fontSize: 10, color: 'var(--text-mute)', borderLeft: '1px solid var(--line)', paddingLeft: 10 }}
+          className="mono"
+          style={{ padding: '6px 12px 6px 16px', flexShrink: 0, fontSize: 10, color: 'var(--text-mute)', borderLeft: '1px solid var(--line)' }}
         >
           RESET
         </button>
