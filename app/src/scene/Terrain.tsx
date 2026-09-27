@@ -186,16 +186,15 @@ export function Terrain() {
           const [gx, gz] = worldToGrid(e.point.x, e.point.z);
           useDrishti.getState().hoverCellAt({ gx, gz, lon, lat });
         }}
-        onContextMenu={(e) => {
-          // Right-click to inspect — left click is reserved for camera orbit, so a target
-          // pick needs its own gesture. CameraRig already suppresses the browser's native
-          // right-click menu on this canvas.
-          if (view !== 'FLAT') return;
+        onDoubleClick={(e) => {
+          // Inspect without changing the active view or the selected mine's camera pivot.
+          // Single left-drag still orbits; right-drag still pans.
+          if (view !== 'FLAT' || e.button !== 0 || e.delta > 5 || useDrishti.getState().transitioning) return;
+          e.stopPropagation();
           e.nativeEvent.preventDefault();
           const [lon, lat] = worldToLonLat(e.point.x, e.point.z);
           const [gx, gz] = worldToGrid(e.point.x, e.point.z);
           useDrishti.getState().selectCell({ gx, gz, lon, lat, y: e.point.y });
-          useDrishti.getState().setView('RELIEF');
         }}
       />
       {view === 'RELIEF' && ceilingWireGeometry && (
@@ -214,7 +213,9 @@ export function Terrain() {
             const [gx, gz] = worldToGrid(e.point.x, e.point.z);
             useDrishti.getState().hoverCellAt({ gx, gz, lon, lat });
           }}
-          onContextMenu={(e) => {
+          onDoubleClick={(e) => {
+            if (e.button !== 0 || e.delta > 5 || useDrishti.getState().transitioning) return;
+            e.stopPropagation();
             e.nativeEvent.preventDefault();
             const [lon, lat] = worldToLonLat(e.point.x, e.point.z);
             const [gx, gz] = worldToGrid(e.point.x, e.point.z);

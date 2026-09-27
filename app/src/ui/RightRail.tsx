@@ -1,9 +1,10 @@
 import { useDrishti } from '../store/useDrishti';
 import { useSiteData } from '../scene/Canvas3D';
 import { SensorCard } from './SensorCard';
-import { ModelValidation } from './widgets/ModelValidation';
+import { ModelOverview } from './widgets/ModelOverview';
 import { Waterfall } from './widgets/Waterfall';
 import { FEATURE_LABEL } from '../data/features';
+import { SatelliteInspector } from './SatelliteInspector';
 
 export function RightRail() {
   const view = useDrishti((s) => s.view);
@@ -21,20 +22,24 @@ export function RightRail() {
       : [];
 
   return (
-    <div className="absolute right-4" style={{ top: 84, bottom: 300, width: 260, pointerEvents: 'none' }}>
+    <div className="dashboard-rail dashboard-right">
       {/*
-        Target Inspector and Depth Profile used to live here too; they're now a popup at the
-        clicked point itself (widgets/TargetInspector.tsx), not a second look-up in this rail.
+        Target Inspector and Depth Profile share a callout attached to the selected map point.
       */}
       <div
-        className="flex flex-col gap-3"
-        style={{ position: 'absolute', inset: 0, overflowY: 'auto', pointerEvents: 'auto' }}
+        className="dashboard-rail-scroll flex flex-col gap-3"
+        style={{ position: 'absolute', inset: 0, pointerEvents: 'auto' }}
       >
-        <div className="glass" style={{ width: 260, flexShrink: 0 }}>
-          <ModelValidation />
-          {shapItems.length > 0 && <Waterfall items={shapItems} title="SHAP DRIVERS" />}
+        {view === 'GLOBE' ? <SatelliteInspector /> : <><div className="glass dashboard-model">
+          <ModelOverview />
+          {shapItems.length > 0 && (
+            <details className="dashboard-drivers">
+              <summary>Model drivers</summary>
+              <Waterfall items={shapItems} title="SHAP DRIVERS" />
+            </details>
+          )}
         </div>
-        <SensorCard />
+        <SensorCard /></>}
       </div>
     </div>
   );

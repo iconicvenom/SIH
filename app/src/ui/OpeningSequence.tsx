@@ -32,7 +32,9 @@ export function OpeningSequence() {
   // correct: each invocation's timers are cleaned up by its own cleanup, and only the
   // final, persisting invocation's timers survive to fire.
   useEffect(() => {
-    if (reducedMotion) return;
+    // Changing the motion preference after launch must not restart the boot stages
+    // and hide the dashboard rails while the satellites begin moving.
+    if (reducedMotion || useDrishti.getState().bootStage >= 7) return;
     const timers = SCHEDULE.map(([ms, stage]) => window.setTimeout(() => setBootStage(stage), ms));
     // Overlay itself: mark visible at 0, fading from ~300ms through ~1300ms as the globe rises.
     const fadeStart = window.setTimeout(() => setOverlayOpacity(0), 300);

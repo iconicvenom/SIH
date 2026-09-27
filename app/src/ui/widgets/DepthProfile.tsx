@@ -4,54 +4,40 @@ import { useDrishti } from '../../store/useDrishti';
 import { lonLatToWorld } from '../../lib/geo';
 import { rampCss } from '../../lib/ramp';
 
-const DEPTHS = Array.from({ length: 25 }, (_, i) => i * 10); // 0..240 step 10, matches DrillTrace
+const DEPTHS = Array.from({ length: 25 }, (_, i) => i * 10);
 
-/**
- * Depth on the y-axis running DOWNWARD — geologists read depth downward, never invert.
- * Samples the same 25 (x,z,depth) points as the 3D DrillTrace, so the two can never disagree.
- */
+/** Same 25 samples as before, displayed in a fitted vertical depth log. */
 export function DepthProfile() {
   const site = useSiteData();
-  const selectedCell = useDrishti((s) => s.selectedCell);
-  const hoveredDepth = useDrishti((s) => s.hoveredDepth);
-  const setHoveredDepth = useDrishti((s) => s.setHoveredDepth);
-
+  const selectedCell = useDrishti(s => s.selectedCell);
+  const hoveredDepth = useDrishti(s => s.hoveredDepth);
+  const setHoveredDepth = useDrishti(s => s.setHoveredDepth);
   const rows = useMemo(() => {
     if (!site || !selectedCell) return null;
     const [x, z] = lonLatToWorld(selectedCell.lon, selectedCell.lat);
-    return DEPTHS.map((depth) => ({ depth, p: site.probabilityAt(x, z, depth) }));
+    return DEPTHS.map(depth => ({ depth, p: site.probabilityAt(x, z, depth) }));
   }, [site, selectedCell]);
-
   if (!rows) return null;
+  const active = rows.find(row => row.depth === hoveredDepth) ?? rows.reduce((best, row) => row.p > best.p ? row : best);
 
-  return (
-    <div className="data" style={{ padding: 12, borderTop: '1px solid var(--line)' }}>
-      <div className="label mb-2">DEPTH PROFILE</div>
-      <div>
-        {rows.map((row) => {
-          const hovered = hoveredDepth === row.depth;
-          return (
-            <div
-              key={row.depth}
-              onMouseEnter={() => setHoveredDepth(row.depth)}
-              onMouseLeave={() => setHoveredDepth(null)}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, height: 14 }}
-            >
-              <span className="mono" style={{ fontSize: 10, color: 'var(--text-mute)', width: 32 }}>
-                {row.depth}m
-              </span>
-              <div
-                style={{
-                  height: 8,
-                  width: `${row.p * 100}%`,
-                  background: rampCss(row.p),
-                  outline: hovered ? '1px solid var(--rhodonite)' : 'none',
-                }}
-              />
-            </div>
-          );
-        })}
-      </div>
+  return <section className="depth-log" aria-label="Mineral potential by depth">
+    <header><h3>Potential by depth</h3><p>Longer bars mean a stronger model signal.</p></header>
+    <div className="depth-log-axis" aria-hidden="true"><span>m ↓</span><div><span>0</span><span>0.5</span><span>1</span></div><span>Score</span></div>
+    <div className="depth-log-rows" onMouseLeave={() => setHoveredDepth(null)}>
+      {rows.map(row => {
+        const highlighted = row.depth === active.depth;
+        return <button key={row.depth} className="depth-log-row" data-depth={row.depth} data-score={row.p}
+          aria-label={`${row.depth} metres below surface: model score ${row.p.toFixed(3)}`}
+          title={`${row.depth} m below surface · score ${row.p.toFixed(3)} / 1`}
+          onMouseEnter={() => setHoveredDepth(row.depth)} onFocus={() => setHoveredDepth(row.depth)} onBlur={() => setHoveredDepth(null)}
+          data-active={highlighted}>
+          <span>{row.depth % 40 === 0 || highlighted ? row.depth : ''}</span>
+          <span className="depth-log-track"><span style={{ width: `${row.p * 100}%`, background: rampCss(row.p) }} /></span>
+          <span>{highlighted ? row.p.toFixed(2) : ''}</span>
+        </button>;
+      })}
     </div>
-  );
+    <div className="depth-log-readout" aria-live="polite"><span>{active.depth} m below surface</span><strong>{active.p.toFixed(3)} / 1</strong></div>
+    <p className="depth-log-note">Hover a level · modelled potential, not confirmed ore.</p>
+  </section>;
 }

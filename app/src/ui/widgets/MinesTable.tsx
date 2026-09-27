@@ -67,8 +67,8 @@ export function MinesTable() {
   return (
     <div className="glass" style={{ padding: 12, height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div className="label mb-2">MINES · RANKED BY PREDICTED RISK</div>
-      <div className="data" style={{ flex: 1, minHeight: 0 }}>
-        <div className="mono" style={{ display: 'grid', gridTemplateColumns: '0.6fr 1.3fr 1fr 0.8fr 1fr 1fr', gap: 4, padding: '4px 0', borderBottom: '1px solid var(--line)' }}>
+      <div className="data" style={{ flex: 1, minHeight: 0, overflowY: 'auto', overflowX: 'hidden' }}>
+        <div className="mono mines-table-grid" style={{ padding: '4px 0', borderBottom: '1px solid var(--line)' }}>
           <span className="label" style={{ fontSize: 10 }}>
             ID
           </span>
@@ -87,27 +87,18 @@ export function MinesTable() {
               selectMine(mine.id);
               if (view === 'GLOBE' || view === 'FLAT') setView('RELIEF');
             }}
-            className="mono"
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '0.6fr 1.3fr 1fr 0.8fr 1fr 1fr',
-              gap: 4,
-              padding: '6px 0',
-              borderBottom: '1px solid var(--line)',
-              fontSize: 11,
-              cursor: 'pointer',
-            }}
+            className="mono mines-table-grid mines-table-row"
           >
             <span style={{ color: 'var(--text-mute)' }}>{mine.id.slice(0, 3).toUpperCase()}</span>
             <span style={{ color: 'var(--text)' }}>{mine.name}</span>
             <span style={{ color: 'var(--text-dim)' }}>{mine.district}</span>
             <span style={{ color: 'var(--text-dim)' }}>{mine.type}</span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: RISK_COLOR[risk] }} />
+              <span style={{ width: 6, height: 6, flexShrink: 0, borderRadius: '50%', background: RISK_COLOR[risk] }} />
               <span style={{ color: 'var(--text-dim)' }}>{VERDICT[risk]}</span>
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-              <div style={{ width: 30, height: 4, background: 'var(--line-hi)' }}>
+              <div style={{ width: 24, flexShrink: 0, height: 4, background: 'var(--line-hi)' }}>
                 <div style={{ width: `${shortfallProb * 100}%`, height: 4, background: RISK_COLOR[risk] }} />
               </div>
               <span style={{ color: 'var(--text-dim)' }}>{formatPercent(shortfallProb)}</span>

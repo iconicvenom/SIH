@@ -101,7 +101,7 @@ export function Canvas3D() {
       camera={{ fov: 45, near: 0.01, far: 4000 }}
       // A click that hits no mesh at all (empty space off the terrain) clears the current
       // selection, dismissing the Target Inspector popup and its marker — the only way to
-      // deselect, since Terrain's own onContextMenu only ever sets a new selectedCell.
+      // deselect, since Terrain's own onDoubleClick only ever sets a new selectedCell.
       onPointerMissed={() => useDrishti.getState().selectCell(null)}
     >
       <CameraRig />

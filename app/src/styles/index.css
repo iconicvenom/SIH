@@ -8,6 +8,7 @@
 @import '@fontsource/ibm-plex-mono/500.css';
 
 @import './tokens.css';
+@import './dashboard.css';
 
 * {
   box-sizing: border-box;

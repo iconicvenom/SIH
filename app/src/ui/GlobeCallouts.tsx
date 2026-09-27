@@ -109,7 +109,9 @@ export function GlobeCallouts() {
     return out;
   }, [targets, view, site, tick]);
 
-  if (anchors.length === 0) return null;
+  // The globe is the spacecraft overview. Keep production-risk callouts on the
+  // local mine maps so they cannot cover the moving spacecraft.
+  if (view === 'GLOBE' || anchors.length === 0) return null;
 
   return (
     <svg className="absolute inset-0" style={{ pointerEvents: 'none', width: '100%', height: '100%' }}>

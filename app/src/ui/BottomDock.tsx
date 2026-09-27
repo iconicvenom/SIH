@@ -15,9 +15,8 @@ export function BottomDock() {
 
   return (
     <div
-      className="absolute left-4 right-4 bottom-4"
+      className="dashboard-dock"
       style={{
-        height: 260,
         pointerEvents: 'none',
         opacity: revealed ? 1 : 0,
         transform: revealed ? 'translateY(0)' : 'translateY(16px)',
@@ -33,20 +32,13 @@ export function BottomDock() {
           </div>
         </div>
       ) : tab === 'EXPLORATION' ? (
-        <div className="grid" style={{ gridTemplateColumns: '1fr 1fr 1fr', gap: 12, height: '100%', pointerEvents: 'auto' }}>
+        <div className="dashboard-dock-grid dashboard-exploration">
           <TopDrillTargets />
           <DataInputs />
           <RecommendedActions />
         </div>
       ) : (
-        <div
-          className="grid"
-          // Same total (3.5fr, was 1.3+1+1.2) and MINES keeps the exact same 1fr it already
-          // had, so its pixel width is unchanged — only PREDICTED SHORTFALLS shrinks (it was
-          // sized for a full row of alert cards but usually holds 0-2) and PRODUCTION FORECAST
-          // absorbs everything that frees up.
-          style={{ gridTemplateColumns: '0.65fr 1fr 1.85fr', gap: 12, height: '100%', pointerEvents: 'auto' }}
-        >
+        <div className="dashboard-dock-grid dashboard-operations">
           <RiskAlerts />
           <MinesTable />
           <div className="glass" style={{ height: '100%', overflow: 'hidden' }}>

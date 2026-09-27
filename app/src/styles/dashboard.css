@@ -1,0 +1,102 @@
+:root {
+  --dashboard-margin: 16px;
+  --dashboard-gap: 12px;
+  --dashboard-rail: 260px;
+  --dashboard-top: 84px;
+  --dashboard-dock: 260px;
+  --toolbar-padding: 6px 8px;
+  --toolbar-button-padding: 4px 6px;
+  --toolbar-legend: 185px;
+}
+.dashboard-rail {
+  position: absolute;
+  top: var(--dashboard-top);
+  bottom: calc(var(--dashboard-margin) + var(--dashboard-dock) + var(--dashboard-gap));
+  width: var(--dashboard-rail);
+  min-height: 0;
+  pointer-events: none;
+}
+.dashboard-left { left: var(--dashboard-margin); overflow: clip; }
+.dashboard-left-content { display: flex; flex-direction: column; max-height: 100%; min-height: 0; pointer-events: auto; }
+.dashboard-left-content .region-summary { flex-shrink: 0; }
+.scene-preview { display: flex; flex-direction: column; min-height: 0; flex-shrink: 1; }
+.scene-preview > div { flex-shrink: 0; }
+.scene-preview > .scene-preview-image { flex-shrink: 1; min-height: 48px; }
+.scene-preview-image canvas { object-fit: cover; }
+.dashboard-right { right: var(--dashboard-margin); z-index: 21; }
+.dashboard-rail-scroll { overflow-y: auto; overflow-x: hidden; }
+.dashboard-model { width: 100%; min-width: 0; flex-shrink: 0; }
+.dashboard-drivers { border-top: 1px solid var(--line); }
+.dashboard-drivers summary { padding: 10px 12px; font-size: 11px; color: var(--text-dim); cursor: pointer; }
+.dashboard-dock {
+  position: absolute;
+  left: var(--dashboard-margin);
+  right: var(--dashboard-margin);
+  bottom: var(--dashboard-margin);
+  height: var(--dashboard-dock);
+}
+.dashboard-dock-grid { display: grid; gap: var(--dashboard-gap); height: 100%; pointer-events: auto; }
+.dashboard-dock-grid > * { min-width: 0; min-height: 0; }
+.dashboard-operations { grid-template-columns: minmax(0, 0.6fr) minmax(0, 1.15fr) minmax(0, 1.75fr); }
+.dashboard-exploration { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.scene-toolbar {
+  left: calc(var(--dashboard-margin) + var(--dashboard-rail) + var(--dashboard-gap));
+  right: calc(var(--dashboard-margin) + var(--dashboard-rail) + var(--dashboard-gap));
+  bottom: calc(var(--dashboard-margin) + var(--dashboard-dock) + var(--dashboard-gap));
+  pointer-events: none;
+}
+.scene-toolbar-main { display: flex; flex-direction: column; pointer-events: auto; width: max-content; max-width: min(100%, 540px); padding: var(--toolbar-padding); gap: 4px; border-radius: 8px; }
+.scene-toolbar-controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; }
+.scene-toolbar-views { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.scene-toolbar-views button { padding: var(--toolbar-button-padding); }
+.scene-toolbar-legend { width: var(--toolbar-legend); max-width: 100%; line-height: 1.1; }
+.scene-toolbar-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 3px 10px; padding-top: 3px; border-top: 1px solid var(--line); color: var(--text-dim); font-size: 9px; line-height: 1.2; }
+.scene-toolbar-readout { white-space: nowrap; font-size: 9px; }
+.scene-toolbar-mines { color: var(--rhodonite); font-size: 9px; }
+.scene-toolbar-depth { max-width: 100%; flex-wrap: wrap; justify-content: center; }
+.forecast-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 8px; margin-bottom: 4px; flex-shrink: 0; }
+.forecast-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-width: 0; }
+.mines-table-grid { display: grid; grid-template-columns: 0.5fr 1.3fr 1fr 1.2fr 1fr 1.1fr; gap: 4px; }
+.mines-table-grid > * { min-width: 0; overflow-wrap: anywhere; }
+.mines-table-row { padding: 5px 0; font-size: 10px; border-bottom: 1px solid var(--line); cursor: pointer; }
+
+.region-summary { margin-top: 8px; padding: 12px; pointer-events: auto; }
+.region-summary-name { margin: 8px 0 3px; font-family: var(--font-display); font-size: 18px; color: var(--text); }
+.region-summary-location { font-size: 10px; color: var(--text-dim); line-height: 1.5; }
+.region-summary dl { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0 6px; padding-top: 10px; border-top: 1px solid var(--line); }
+.region-summary dl > div { display: flex; flex-direction: column-reverse; gap: 3px; }
+.region-summary dt { font-size: 10px; color: var(--text-dim); }
+.region-summary dd { margin: 0; font-size: 20px; line-height: 1; font-variant-numeric: tabular-nums; color: var(--ore-100); }
+.region-summary-districts { font-size: 10px; line-height: 1.5; color: var(--text-dim); }
+.region-summary-context { font-size: 11px; line-height: 1.5; color: var(--text); margin-top: 8px; }
+.region-summary-note { font-size: 10px; line-height: 1.5; color: var(--text-dim); margin-top: 8px; }
+.region-summary button { display: flex; justify-content: space-between; width: 100%; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--line); font-size: 11px; text-align: left; color: var(--text); }
+.region-summary button:hover { color: var(--rhodonite); }
+.region-summary button:focus-visible { outline: 2px solid var(--rhodonite); outline-offset: 4px; }
+
+/* Compact desktop spacing at normal browser zoom; terrain and text retain their scale. */
+@media (max-height: 900px), (max-width: 1400px) {
+  :root {
+    --dashboard-margin: 12px;
+    --dashboard-rail: 248px;
+    --dashboard-top: 60px;
+    --dashboard-dock: 240px;
+    --toolbar-button-padding: 4px 5px;
+    --toolbar-legend: 180px;
+  }
+  .dashboard-model .model-overview-header { padding: 10px 12px; }
+  .dashboard-model .model-overview-body { padding: 10px; }
+  .dashboard-model .model-overview-volume { height: 112px; }
+  .dashboard-model .model-overview-caption { padding-bottom: 8px; }
+  .dashboard-model .model-overview-score { padding: 10px 0 8px; }
+  .dashboard-model .model-overview-readings { margin-bottom: 10px; }
+  .dashboard-model .model-overview-readings > div { padding: 3px 0; }
+  .dashboard-model .model-overview-maps svg { height: 52px; }
+  .dashboard-model .model-overview-maps span { margin-top: 4px; }
+  .dashboard-model .model-overview-footer { padding: 10px 0 6px; }
+  .dashboard-model .model-overview-inspect { padding-top: 8px; }
+}
+@media (max-height: 800px) {
+  :root { --dashboard-top: 48px; --dashboard-dock: 220px; }
+  .dashboard-model .model-overview-volume { height: 96px; }
+}

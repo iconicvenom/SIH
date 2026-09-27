@@ -1,111 +1,64 @@
 import { useMemo } from 'react';
 import { useSiteData } from '../../scene/Canvas3D';
 import { useDrishti } from '../../store/useDrishti';
-import { computeRiskRows, flaggedForMissTarget, type RiskRow } from '../../lib/stats';
+import { computeRiskRows, flaggedForMissTarget } from '../../lib/stats';
+import { productionOutlook } from '../../lib/productionOutlook';
 import { formatTonnes } from '../../lib/format';
+import { MINES } from '../../data/mines';
+import { TODAY_ISO } from '../../data/generate';
+import './ProductionOutlook.css';
 
-interface Alert {
-  id: string;
-  title: string;
-  mineId: string;
-  mineName: string;
-  date: string;
-  horizonLabel: string;
-  valueLabel: string;
-  severity: RiskRow['risk'];
-}
-
-/**
- * Up to six cards, one per mine flagged by flaggedForMissTarget — never padded with mines that
- * don't clear that bar just to fill the grid, which is what let this panel show 6 cards while
- * the status strip counted 1. Alert types include Data Staleness — a layer too old to trust —
- * a real remote-sensing operational alert (Part III §5.6).
- */
-function buildAlerts(rows: RiskRow[]): Alert[] {
-  const templates: { title: string; horizon: string }[] = [
-    { title: 'Shortfall Predicted', horizon: '90d horizon' },
-    { title: 'Equipment Degradation', horizon: '30d horizon' },
-    { title: 'Rainfall Disruption', horizon: '14d horizon' },
-    { title: 'Blast Schedule Slip', horizon: '21d horizon' },
-    { title: 'Grade Variance', horizon: '60d horizon' },
-    { title: 'Data Staleness', horizon: 'sensor layer' },
-  ];
-  return rows.slice(0, 6).map((r, i) => {
-    const t = templates[i % templates.length];
-    return {
-      id: `${r.mineId}-${i}`,
-      title: t.title,
-      mineId: r.mineId,
-      mineName: r.name,
-      date: r.peakMonth ?? '—',
-      horizonLabel: t.horizon,
-      valueLabel: t.title === 'Data Staleness' ? '◇ 6d stale' : `◇ P90 −${formatTonnes(Math.round(r.magnitudeTonnes))}`,
-      severity: r.risk,
-    };
-  });
-}
-
-function SeverityBars({ severity }: { severity: RiskRow['risk'] }) {
-  const level = severity === 'ACT' ? 3 : severity === 'WATCH' ? 2 : 1;
-  const color = severity === 'ACT' ? 'var(--risk-high)' : severity === 'WATCH' ? 'var(--risk-mid)' : 'var(--risk-low)';
-  return (
-    <div style={{ display: 'flex', gap: 2, alignItems: 'flex-end' }}>
-      {[1, 2, 3].map((i) => (
-        <div key={i} style={{ width: 3, height: 4 + i * 3, background: i <= level ? color : 'var(--line-hi)' }} />
-      ))}
-    </div>
-  );
-}
+const monthName = (month: string) => new Date(`${month}-01T00:00:00Z`)
+  .toLocaleDateString('en-GB', { month: 'short', timeZone: 'UTC' });
 
 export function RiskAlerts() {
   const site = useSiteData();
-  const bootStage = useDrishti((s) => s.bootStage);
-  const selectAlert = useDrishti((s) => s.selectAlert);
-  const selectMine = useDrishti((s) => s.selectMine);
-  const setView = useDrishti((s) => s.setView);
-  const view = useDrishti((s) => s.view);
-
-  const alerts = useMemo(() => (site ? buildAlerts(flaggedForMissTarget(computeRiskRows(site))) : []), [site]);
-  const revealCount = bootStage >= 6 ? alerts.length : Math.max(0, bootStage - 5) * 3;
+  const selectedMine = useDrishti(s => s.selectedMine);
+  const flagged = useMemo(() => site ? flaggedForMissTarget(computeRiskRows(site)) : [], [site]);
+  const mineId = selectedMine ?? flagged[0]?.mineId ?? MINES[0].id;
+  const mine = MINES.find(m => m.id === mineId);
+  const outlook = useMemo(() => productionOutlook(site?.production.find(p => p.mineId === mineId)?.series ?? []), [site, mineId]);
+  const scale = Math.max(1, ...outlook.months.flatMap(p => [p.plan, p.forecastP90 ?? p.forecastP50])) * 1.08;
+  const position = (value: number) => value / scale * 100;
+  const gap = outlook.balance < 0;
 
   return (
-    <div className="glass" style={{ padding: 12, height: '100%', overflow: 'hidden' }}>
-      <div className="label mb-2">PREDICTED SHORTFALLS · NEXT 90 DAYS</div>
-      {alerts.length === 0 ? (
-        <div style={{ fontSize: 12, color: 'var(--text-mute)', marginTop: 4 }} className="mono">
-          No mine forecast to miss target in the next 90 days.
-        </div>
-      ) : (
-        // Sized to however many cards actually exist (usually 0-2), not a fixed 3-wide grid
-        // that reserves space for a full row regardless of count.
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 8 }}>
-          {alerts.slice(0, revealCount).map((a) => {
-          const glowClass = a.severity === 'ACT' ? 'glow-act' : a.severity === 'WATCH' ? 'glow-watch' : '';
-          return (
-            <button
-              key={a.id}
-              onClick={() => {
-                selectAlert(a.id);
-                selectMine(a.mineId);
-                if (view === 'GLOBE' || view === 'FLAT') setView('RELIEF');
-              }}
-              className={`data mono ${glowClass}`}
-              style={{ padding: 8, textAlign: 'left', border: '1px solid var(--line)' }}
-            >
-              <div className="flex items-center justify-between">
-                <span style={{ fontSize: 12, color: 'var(--text)' }}>{a.title}</span>
-                <SeverityBars severity={a.severity} />
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text-dim)', marginTop: 4 }}>⛏ {a.mineName}</div>
-              <div style={{ fontSize: 10, color: 'var(--text-mute)' }}>
-                {a.date} · {a.horizonLabel}
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--text)', marginTop: 4, textAlign: 'right' }}>{a.valueLabel}</div>
-            </button>
-          );
+    <section className="glass production-outlook" aria-label="90-day production outlook">
+      <header><h2>90-day outlook</h2><span className="outlook-demo">Demo data</span></header>
+      <button className="outlook-mine" title={`View ${mine?.name}`} onClick={() => {
+        const state = useDrishti.getState();
+        state.selectMine(mineId);
+        if (state.view === 'GLOBE' || state.view === 'FLAT') state.setView('RELIEF');
+      }}><span>{mine?.name ?? 'Mine forecast'}</span><span aria-hidden="true">↗</span></button>
+      {outlook.months.length ? <>
+        <dl className="outlook-totals">
+          <div><dt>Forecast total</dt><dd>{formatTonnes(outlook.forecast)}</dd></div>
+          <div><dt>{outlook.balance > 0 ? 'Above target' : 'Gap to target'}</dt>
+            <dd className={gap ? 'outlook-gap' : ''}>{formatTonnes(Math.abs(outlook.balance))}</dd></div>
+        </dl>
+        <div className="outlook-legend"><span><i />Forecast</span><span><b />Target</span><span><em />Range</span></div>
+        <div className="outlook-months">
+          {outlook.months.map(p => {
+            const lower = p.forecastP10 ?? p.forecastP50, upper = p.forecastP90 ?? p.forecastP50;
+            const label = `${monthName(p.month)} ${p.month.slice(0,4)}: forecast ${formatTonnes(p.forecastP50)}, target ${formatTonnes(p.plan)}, model range ${formatTonnes(lower)} to ${formatTonnes(upper)}`;
+            return <div className="outlook-month" key={p.month}>
+              <span>{monthName(p.month)}</span>
+              <svg viewBox="0 0 100 16" preserveAspectRatio="none" role="img" aria-label={label}>
+                <title>{label}</title>
+                <rect x="0" y="4" width="100" height="8" rx="2" fill="var(--panel-hi)" />
+                <rect x="0" y="4" width={position(p.forecastP50)} height="8" rx="2" fill="var(--ore-80)" />
+                <path d={`M${position(lower)} 8H${position(upper)} M${position(lower)} 6v4 M${position(upper)} 6v4`} stroke="var(--ore-100)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+                <path d={`M${position(p.plan)} 1v14`} stroke="var(--text)" strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+              </svg>
+              <span className="outlook-month-value" title={formatTonnes(p.forecastP50)}>{(p.forecastP50 / 1000).toFixed(1)}k t</span>
+            </div>;
           })}
         </div>
-      )}
-    </div>
+        <p className="outlook-signal">{outlook.belowTarget ? `${outlook.belowTarget}/${outlook.months.length} months below target · ${monthName(outlook.worstMonth!)} largest gap` : 'Forecast meets each monthly target'}</p>
+        <footer title="Forecast uses the median estimate; range is the model’s 10th–90th percentiles. Production data is synthetic, not a validated operational forecast.">
+          Issued {TODAY_ISO} · tonnes<br />Synthetic forecast · range is illustrative
+        </footer>
+      </> : <p className="outlook-empty">{site ? 'No forecast available for this mine.' : 'Loading forecast…'}</p>}
+    </section>
   );
 }

@@ -149,12 +149,12 @@ function TargetTile({
     }
   }, [img, lon, lat, filter, offsetPx]);
   return (
-    <div style={{ width: TARGET_TILE_W }}>
+    <div style={{ minWidth: 0 }}>
       <canvas
         ref={canvasRef}
         width={TARGET_TILE_W}
         height={TARGET_TILE_H}
-        style={{ display: 'block', borderRadius: 4, background: '#0d141c' }}
+        style={{ display: 'block', width: '100%', height: 'auto', borderRadius: 4, background: '#0d141c' }}
       />
       <div className="mono" style={{ fontSize: 9, color: 'var(--text-mute)', marginTop: 2, textAlign: 'center' }}>
         {label}
@@ -193,9 +193,9 @@ export function ScenePreview() {
   }, [site, selectedCell]);
 
   return (
-    <div className="glass" style={{ padding: 10, pointerEvents: 'auto' }}>
-      <div style={{ position: 'relative', width: TILE_W, height: TILE_H, overflow: 'hidden', borderRadius: 6 }}>
-        <canvas ref={canvasRef} width={TILE_W} height={TILE_H} style={{ display: 'block', background: '#0d141c' }} />
+    <div className="glass scene-preview" style={{ padding: 10, pointerEvents: 'auto' }}>
+      <div className="scene-preview-image" style={{ position: 'relative', width: '100%', aspectRatio: `${TILE_W} / ${TILE_H}`, overflow: 'hidden', borderRadius: 6 }}>
+        <canvas ref={canvasRef} width={TILE_W} height={TILE_H} style={{ display: 'block', width: '100%', height: '100%', background: '#0d141c' }} />
         <div
           className="mono"
           style={{
@@ -225,7 +225,7 @@ export function ScenePreview() {
           <div className="label" style={{ marginBottom: 6 }}>
             TARGET COVERAGE · {formatProbability(target.p)}
           </div>
-          <div className="flex" style={{ gap: 6 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 6 }}>
             {TARGET_SENSORS.map((s) => (
               <TargetTile key={s.label} lon={target.lon} lat={target.lat} label={s.label} offsetPx={s.offsetPx} filter={s.filter} />
             ))}

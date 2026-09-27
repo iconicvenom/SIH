@@ -20,7 +20,7 @@ const LAYERS: Layer[] = [
   { name: 'Scene thumbnails', status: 'REAL', note: 'NASA GIBS (MODIS Terra) true-colour imagery of the actual Sausar Belt bbox, 2025-03-05 — a real clear-sky pass, not a live feed. Late-August passes here are ~80% cloud, so a current date would show nothing.' },
   { name: 'Terrain surface photo', status: 'REAL', note: 'Same 2025-03-05 GIBS image, draped pixel-for-pixel across the 3D terrain as its base layer; the prospectivity/confidence colour is masked over it, not painted flat.' },
   { name: 'Pass times & cloud forecasts', status: 'MODELLED', note: 'Illustrative, not a live acquisition-planning feed.' },
-  { name: 'Satellite models on the globe', status: 'MODELLED', note: 'Real missions, altitude & inclination (Sentinel-2B, EOS-04); positions are a compressed simulated pass, not live-tracked ephemeris.' },
+  { name: 'Satellite models on the globe', status: 'MODELLED', note: 'Sentinel-2B, Landsat-9 and Cartosat-3: visual reconstructions from ESA, NASA and ISRO references, enlarged for visibility. All three follow continuous 18-second presentation loops over India and surrounding waters. Paths, timing and attitude are illustrative, not real or live orbital positions. Mission specifications are nominal published values.' },
 ];
 
 export function AboutData({ onClose }: { onClose: () => void }) {
@@ -39,8 +39,8 @@ export function AboutData({ onClose }: { onClose: () => void }) {
       >
         <div className="label mb-1">ABOUT THE DATA</div>
         <div style={{ fontSize: 12, color: 'var(--text-mute)', marginBottom: 14 }}>
-          DRISHTI does not command, own or track any spacecraft. Satellites appear only as data
-          sources — inputs to a prospectivity model, not tracked assets.
+          DRISHTI does not command spacecraft. Satellite movement is a regional presentation
+          animation; acquisition forecasts below remain illustrative.
         </div>
 
         <div className="data">

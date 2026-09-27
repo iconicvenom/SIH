@@ -130,9 +130,8 @@ export function CameraRig() {
     // Below this many total pixels of movement since pointerdown, treat the gesture as a
     // click-in-progress, not a drag — a real mouse/trackpad click almost never lands with
     // zero movement, and applying orbit/pan on that jitter was shifting the terrain out from
-    // under the cursor before pointerup, so a right-click-to-inspect (Terrain.tsx's
-    // onContextMenu) on a spot often selected the wrong (or no) cell. Gates both buttons: a
-    // near-still right click still selects correctly, an actual right-drag still pans.
+    // under the cursor before pointerup. Keep double-click inspection steady while
+    // left-drag orbits and right-drag pans once the movement threshold is crossed.
     const DRAG_THRESHOLD = 5;
     let downX = 0;
     let downY = 0;

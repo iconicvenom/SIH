@@ -1,6 +1,6 @@
 import { useDrishti } from '../store/useDrishti';
 import { ScenePreview } from './ScenePreview';
-import { SimulateCluster } from './SimulateCluster';
+import { RegionSummary } from './RegionSummary';
 import { DriverWaterfall } from './widgets/DriverWaterfall';
 
 export function LeftRail() {
@@ -11,20 +11,17 @@ export function LeftRail() {
 
   return (
     <aside
-      className="absolute left-4 flex flex-col"
+      className="dashboard-rail dashboard-left flex flex-col"
       style={{
-        top: 84,
-        bottom: 292,
-        width: 260,
         pointerEvents: 'none',
         opacity: revealed ? 1 : 0,
         transform: revealed ? 'translateX(0)' : 'translateX(-12px)',
         transition: 'opacity 500ms var(--ease-entrance), transform 500ms var(--ease-entrance)',
       }}
     >
-      <div style={{ pointerEvents: 'auto' }}>
+      <div className="dashboard-left-content">
         <ScenePreview />
-        <SimulateCluster />
+        <RegionSummary />
       </div>
 
       {/* EXPLORATION has nothing here by design — Target Inspector and Depth Profile are a

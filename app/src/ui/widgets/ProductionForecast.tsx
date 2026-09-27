@@ -158,8 +158,8 @@ export function ProductionForecast() {
 
   return (
     <div className="data" style={{ padding: 12, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div className="flex items-center justify-between mb-1">
-        <div className="flex items-center gap-2">
+      <div className="forecast-header">
+        <div className="forecast-heading">
           <span className="label">PRODUCTION FORECAST</span>
           <span className="mono" style={{ fontSize: 10, color: 'var(--text-mute)' }}>
             18mo history · 90d forward
